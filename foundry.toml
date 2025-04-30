@@ -1,0 +1,31 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+
+rpc_url = "${SEPOLIA_RPC_URL}"
+private_key = "${PRIVATE_KEY}"
+etherscan_api_key = "${ETHERSCAN_API_KEY}"
+
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+
+remappings = [
+    "@chainlink/contracts/=lib/chainlink-brownie-contracts/contracts",
+    "@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/",
+    "forge-std/=lib/forge-std/src",
+    "foundry-devops/=lib/foundry-devops/src/",
+]
+
+[profile.zk]
+rpc_url = "${ZKSYNC_SEPOLIA_RPC_URL}"
+private_key = "${PRIVATE_KEY}"
+solc_version = "0.8.24"
+optimizer = true
+optimizer_runs = 200
+via_ir = true
+
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options

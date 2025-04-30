@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Ensure full height layout */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Font declarations*/
+@font-face {
+  font-family: "EarlyGameBoy";
+  src: url("/fonts/EarlyGameBoy.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "IBM";
+  src: url("/fonts/IBMPlexMono-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "VT323";
+  src: url("/fonts/VT323-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Logo hover styling */
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  transition: filter 300ms;
+}
+
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+/* Logo spin */
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Game image sizes */
+.toad-image,
+.blob-image {
+  width: 30px;
+  height: auto;
+}
+
+/* Coin rain animation for individual falling images */
+@keyframes coinRain {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400vh) rotate(360deg);
+    opacity: 0.7;
+  }
+}
+
+.coin {
+  position: absolute;
+  top: -40px;
+  width: 40px;
+  height: 40px;
+  animation: coinRain 8s linear forwards;
+  pointer-events: none;
+  z-index: 999;
+}
+
+/* Blackout screen for skull jackpot */
+.blackout {
+  position: fixed;
+  inset: 0;
+  background-color: black;
+  opacity: 0.8;
+  z-index: 50;
+  pointer-events: none;
+  animation: lightningFlash 8s ease-in-out 2;
+}
+
+/* Lightning flash keyframes */
+@keyframes lightningFlash {
+  0%,
+  100% {
+    opacity: 0.8;
+  }
+  10% {
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  30% {
+    opacity: 0.1;
+  }
+  50% {
+    opacity: 0.95;
+  }
+  70% {
+    opacity: 0.2;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}
