@@ -1,6 +1,6 @@
 # 🕹️ Zmol Games
 
-An onchain arcade built for fun, weirdness, and exploration.  
+An onchain arcade built for fun and exploration.  
 Every game is deployed on [zkSync Era](https://zksync.io) and runs entirely on smart contracts.
 
 > “Pointless, but permanent. Seriously onchain.”  
@@ -11,7 +11,7 @@ Every game is deployed on [zkSync Era](https://zksync.io) and runs entirely on s
 
 - Fully functional on zkSync mainnet
 - All games use a custom credit system (`ZmolCredits`)
-- No real-world prizes — just onchain points and existential ennui
+- Onchain points 
 
 ---
 
@@ -62,7 +62,7 @@ Zmol is about reclaiming the fun of early crypto: no utility, no scams, just str
 
 Yes, the contracts are real.  
 Yes, it's on mainnet.  
-No, it’s not serious.
+No, it’s not that serious.
 
 ---
 
