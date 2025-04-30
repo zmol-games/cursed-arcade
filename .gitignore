@@ -1,19 +1,30 @@
-# Compiler files
-cache/
+# Foundry compiler output
 out/
+cache/
 zkout/
 
-# Ignores development broadcast logs
-!/broadcast
-/broadcast/*/31337/
+# Ignore broadcast logs (but keep folder itself)
+/broadcast/*/
 /broadcast/**/dry-run/
+/broadcast/**/31337/
 
-# Docs
-docs/
+# Keep empty folder structure
+!/broadcast/
+!/broadcast/.gitkeep
 
-# Dotenv file
+# Node + toolchain
+node_modules/
+package-lock.json
+
+# Local secrets
 .env
+.env.*.local
 
+# Misc
 Makefile
-node_modules
 verify.sh
+
+# Editor/OS junk
+.DS_Store
+.vscode/
+.idea/
