@@ -43,8 +43,8 @@ All deployed on **zkSync Era mainnet**.
 
 | Contract               | Type           | Address |
 |------------------------|----------------|---------|
-| ZmolCredits (proxy)    | Upgradeable    | [`0xACa79d...`](https://explorer.zksync.io/address/0xACa79d2649464f5Ce8A9A05b6D66cAC6bDD5310b) |
-| ArcadePoints (proxy)   | Upgradeable    | [`0x66E881...`](https://explorer.zksync.io/address/0x66E8815136E9E3DEA50c1f63178ff943a89D5083) |
+| ZmolCredits (proxy)    | Upgradeable    | [`0xACa79d...`](https://explorer.zksync.io/address/0xAB78b49d877841f4329591946bD56D98f5879D70) |
+| ArcadePoints (proxy)   | Upgradeable    | [`0x66E881...`](https://explorer.zksync.io/address/0x3369558E7F64CBD6634763988B8C318cd232159B) |
 | ZmolCredits (logic)    | Logic Contract | [`0xCca08D...`](https://explorer.zksync.io/address/0xCca08DD6b4dcF52E22197690C1FE564fbF5934cE) |
 | ArcadePoints (logic)   | Logic Contract | [`0x8D708d...`](https://explorer.zksync.io/address/0x8D708de0aB5d1b4B400af63C0A25cFBf079f7160) |
 | ZmolFaucet             | Standalone     | [`0x2fe310...`](https://explorer.zksync.io/address/0x2fe310860c2c563D0fa547B7E7Ea1ECE121FdfE8) |
