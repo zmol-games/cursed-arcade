@@ -1,19 +1,19 @@
 // src/utils/localhostChain.js
 export const localHostChain = {
-  id: 31337,
+    id: 31337,
   name: "Anvil",
   network: "anvil",
-  nativeCurrency: {
+    nativeCurrency: {
     name: "Ether",
     symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: "http://localhost:8545", // Correct this to a string
-    public: "http://localhost:8545", // Correct this to a string
-  },
-  blockExplorers: {
+      decimals: 18,
+    },
+    rpcUrls: {
+    default: "http://localhost:8545", 
+    public: "http://localhost:8545", 
+    },
+    blockExplorers: {
     default: { name: "Local", url: "http://localhost:8545" },
-  },
-  testnet: true,
+    },
+    testnet: true,
 };

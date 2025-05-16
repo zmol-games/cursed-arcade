@@ -116,12 +116,12 @@ export default function BlobPaperScissors() {
 
       const outcomeValue = Number(gameLog.args.outcome);
 
-      // 🔥 Refresh points if user won
+      // Refresh points if user won
       if (outcomeValue === 0) {
         setPointsRefreshKey((k) => k + 1);
       }
 
-      // 🔥 Always refresh credits after a game
+      // Always refresh credits after a game
       setCreditsRefreshKey((k) => k + 1);
 
       setPlayerMove(Number(gameLog.args.playerMove));

@@ -24,7 +24,7 @@ export default function BuyCreditsButton({ onSuccess }) {
 
     const account = await getWalletAccount();
 
-    const valueInWei = BigInt(numCredits / 10) * BigInt(3e15);
+    const valueInWei = BigInt(numCredits / 10) * BigInt(1e15);
 
     setLoading(true);
     setError(null);

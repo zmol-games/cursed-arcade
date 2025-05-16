@@ -9,6 +9,7 @@ import TicTacToad from "./pages/TicTacToad";
 import BlobPaperScissors from "./pages/BlobPaperScissors";
 import AdminWithdrawButton from "./components/AdminWithdrawButton";
 import FaucetButton from "./components/FaucetButton";
+import MadameZmoltra from './pages/MadameZmoltra'
 
 function Home() {
   const [creditsRefreshKey, setCreditsRefreshKey] = useState(0);
@@ -21,7 +22,7 @@ function Home() {
       return;
     }
 
-    setWalletAvailable(true); // ✅ Wallet *is* available (installed)
+    setWalletAvailable(true); 
 
     async function checkAccounts() {
       try {
@@ -55,8 +56,7 @@ function Home() {
       <div className="min-h-screen flex flex-col justify-center items-center text-center text-white p-8">
         <h1 className="text-4xl font-gameboy mb-4">Zmol Games</h1>
         <p className="text-gameboyButton font-vt">
-          If you're on mobile, please open zmol.games in a Web3 wallet dapp
-          browser like MetaMask or Coinbase Wallet.
+          If you're on mobile, please open zmol.games in MetaMask or Coinbase Wallet dapp browser.
         </p>
       </div>
     );
@@ -95,7 +95,7 @@ function Home() {
 
         {/* Buy credits */}
         <h2 className="mt-8 font-vt text-2xl sm:text-2xl md:text-3xl text-gameboyDark mb-2">
-          0.003 ETH for 10 credits
+          0.001 ETH for 10 credits
         </h2>
         <div className="mt-2">
           <BuyCreditsButton
@@ -157,6 +157,14 @@ function Home() {
               />
             </div>
           </Link>
+
+          <Link to="/madame-zmoltra">
+            <div className="bg-gameboy border-4 border-gameboyDark rounded-none p-2 hover:brightness-110 transition inline-flex items-center justify-center text-xl font-vt text-gameboyDark">
+              <img src="/images/crystalball.png" alt="CrystalBall" className="w-8 h-8" />
+              <img src="/images/madamezmoltrabutton.png" alt="Play Madame Zmoltra" className="h-14" />
+            </div>
+          </Link>
+
         </div>
       </div>
     </div>
@@ -168,13 +176,13 @@ export default function App() {
     <Router>
       <AdminWithdrawButton />
       <Routes>
-        {/* Home route = NOT wrapped in Layout */}
         <Route path="/" element={<Home />} />
 
         {/* Game routes = wrapped in Layout manually */}
         <Route path="/slot-machine" element={<SlotMachine />} />
         <Route path="/tictactoad" element={<TicTacToad />} />
         <Route path="/blob-paper-scissors" element={<BlobPaperScissors />} />
+        <Route path="/madame-zmoltra" element={<MadameZmoltra />} />
       </Routes>
     </Router>
   );

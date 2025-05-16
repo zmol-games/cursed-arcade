@@ -22,6 +22,7 @@ Every game is deployed on [zkSync Era](https://zksync.io) and runs entirely on s
 | 🎰 SlotMachine    | Classic 1-armed bandit with onchain pseudorandomness via `keccak256(...)`.      |
 | 🐸 TicTacToad     | Toad & Blob play Tic-Tac-Toe. You are Blob.      |
 | 🐙 BlobPaperScissors | Rock-Paper-Scissors but slimier.             |
+| 🔮 Madame Zmoltra     | Draw a fortune from the bytecode mists. Some give points. Some give... wisdom? |
 
 More games in development. 
 
@@ -51,8 +52,10 @@ All deployed on **zkSync Era mainnet**.
 | TicTacToad             | Game           | [`0x031E3C...`](https://explorer.zksync.io/address/0x031E3C9d486DA871363F154488924273F5192831) |
 | BlobPaperScissors      | Game           | [`0x16fcc2...`](https://explorer.zksync.io/address/0x16fcc22aAf285b4731fD189a1C42f55a01bed2a8) |
 | SlotMachine            | Game           | [`0x3d38DF...`](https://explorer.zksync.io/address/0x3d38DF5CAb39759aFaf1D135E88091458dcF96f4) |
+| MadameZmoltra            | Game           | [`0x0D2D18...`](https://explorer.zksync.io/address/0x0D2D1836677B162BB60C00459B020117383E8AB7) |
 
-> All source code in `/contracts` and not verified on zkSync Explorer because bytecode.
+✅ **All contracts verified** on zkSync Era mainnet.  
+Source code lives in `/src`. Verified via Foundry + zkSync verifier API.
 
 ---
 
@@ -68,8 +71,7 @@ No, it’s not that serious.
 
 ## Author
 
-Built by anon.  
-No funding. No team. Just caffeine and vibes.
+Built by anon with caffeine and vibes.
 
 ---
 
