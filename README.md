@@ -40,7 +40,7 @@ More games in development.
 ## Contracts
 
 Structural contracts are upgradeable. Games (and faucet) are stateless and immutable.  
-All deployed on **zkSync Era mainnet**.
+All deployed and verified on **zkSync Era mainnet**.
 
 | Contract               | Type           | Address |
 |------------------------|----------------|---------|
