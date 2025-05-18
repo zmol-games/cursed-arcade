@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
 import { decodeEventLog } from "viem";
-import { CONTRACTS } from "../utils/contracts";
+import { getContract } from "../utils/getContract";
 import ToadBoard from "../components/ToadBoard";
 import { getWalletAccount } from "../utils/wallet";
 import Layout from "../components/Layout";
@@ -52,7 +52,9 @@ export default function TicTacToad() {
   const handleOutcomeSound = (outcome) => {
     if (outcome === 0) {
       playWinSound();
-      setPointsRefreshKey((k) => k + 1);
+      setTimeout(() => {
+        setPointsRefreshKey((k) => k + 1);
+      }, 800);
     } else if (outcome === 1) {
       playLoseSound();
     } else if (outcome === 2) {
@@ -67,11 +69,16 @@ export default function TicTacToad() {
 
     try {
       const account = await getWalletAccount();
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+      const walletClient = await getWalletClient(chainId);
+      const { address, abi } = getContract("ticTacToad", chainId);
+      const publicClient = getPublicClient(chainId);
 
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.ticTacToad.address,
-        abi: CONTRACTS.ticTacToad.abi,
+        address,
+        abi,
         functionName: "startGame",
         gas: 300000n,
       });
@@ -88,7 +95,7 @@ export default function TicTacToad() {
         .map((log) => {
           try {
             return decodeEventLog({
-              abi: CONTRACTS.ticTacToad.abi,
+              abi,
               data: log.data,
               topics: log.topics,
             });
@@ -106,7 +113,9 @@ export default function TicTacToad() {
         }
 
         if (log.eventName === "CreditUsed") {
-          setCreditsRefreshKey((k) => k + 1);
+          setTimeout(() => {
+            setCreditsRefreshKey((k) => k + 1);
+          }, 500);
         }
       });
     } catch (err) {
@@ -123,7 +132,6 @@ export default function TicTacToad() {
       pointsRefreshKey={pointsRefreshKey}
       onBuyCreditsSuccess={() => setCreditsRefreshKey((k) => k + 1)}
     >
-      {/* Game container */}
       <div className="w-full max-w-md px-4 py-8 sm:px-8 border-4 border-gameboyButton rounded-2xl shadow-[0_4px_12px_#8bac0f] bg-gameboyFade text-center">
         <h1 className="text-3xl font-gameboy mb-4 text-[#8bac0f]">
           Tic Tac Toad

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
-import { CONTRACTS } from "../utils/contracts";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
+import { getContract } from "../utils/getContract";
 import { decodeEventLog } from "viem";
 import { getWalletAccount } from "../utils/wallet";
 import Layout from "../components/Layout";
@@ -90,6 +90,11 @@ export default function SlotMachine({ refresh }) {
 
     try {
       const account = await getWalletAccount();
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+      const walletClient = await getWalletClient(chainId);
+      const { address, abi } = getContract("slotMachine", chainId);
+      const publicClient = getPublicClient(chainId);
 
       console.log("Account used in playGame:", account);
 
@@ -98,8 +103,8 @@ export default function SlotMachine({ refresh }) {
       try {
         txHash = await walletClient.writeContract({
           account,
-          address: CONTRACTS.slotMachine.address,
-          abi: CONTRACTS.slotMachine.abi,
+          address,
+          abi,
           functionName: "play",
           gas: 300000n,
         });
@@ -120,15 +125,11 @@ export default function SlotMachine({ refresh }) {
 
       const rawLogs = receipt.logs;
       const decodedLogs = rawLogs
-        .filter(
-          (log) =>
-            log.address.toLowerCase() ===
-            CONTRACTS.slotMachine.address.toLowerCase(),
-        )
+        .filter((log) => log.address.toLowerCase() === address.toLowerCase())
         .map((log) => {
           try {
             return decodeEventLog({
-              abi: CONTRACTS.slotMachine.abi,
+              abi,
               data: log.data,
               topics: log.topics,
             });
@@ -145,11 +146,15 @@ export default function SlotMachine({ refresh }) {
         const { eventName, args } = log;
 
         if (eventName === "CreditUsed") {
-          setCreditsRefreshKey((k) => k + 1);
+          setTimeout(() => {
+            setCreditsRefreshKey((k) => k + 1);
+          }, 500);
         }
 
         if (eventName === "SpinResult" && args.win) {
-          setPointsRefreshKey((k) => k + 1);
+          setTimeout(() => {
+            setPointsRefreshKey((k) => k + 1);
+          }, 500);
         }
 
         if (eventName === "PointsFailed") {

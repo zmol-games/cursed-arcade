@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
 import { decodeEventLog } from "viem";
-import { CONTRACTS } from "../utils/contracts";
+import { getContract } from "../utils/getContract";
 import { getWalletAccount } from "../utils/wallet";
 
 const cellLabels = {
@@ -26,14 +26,21 @@ export default function ToadBoard({ gameId, onPlayerMove, onGameEnd }) {
     const account = await getWalletAccount();
 
     try {
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+      const walletClient = await getWalletClient(chainId);       
+      const publicClient = getPublicClient(chainId);           
+      const { address, abi } = getContract("ticTacToad", chainId); 
+
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.ticTacToad.address,
-        abi: CONTRACTS.ticTacToad.abi,
+        address,
+        abi,
         functionName: "playTurn",
         args: [gameId, cell],
         gas: 200000n,
       });
+
 
       const receipt = await publicClient.waitForTransactionReceipt({
         hash: txHash,
@@ -47,7 +54,7 @@ export default function ToadBoard({ gameId, onPlayerMove, onGameEnd }) {
         .map((log) => {
           try {
             return decodeEventLog({
-              abi: CONTRACTS.ticTacToad.abi,
+              abi,
               data: log.data,
               topics: log.topics,
             });

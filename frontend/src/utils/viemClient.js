@@ -1,39 +1,29 @@
-// utils/viemClient.js
-import { createPublicClient, createWalletClient, http, custom } from "viem";
+// src/utils/viemClient.js
+import { createPublicClient, createWalletClient, http, custom } from 'viem'
+import { supportedChains } from './chains'
 
-// --- zkSync Era Mainnet ---
-const zkSyncEra = {
-  id: 324,
-  name: "zkSync Era",
-  network: "zksync-era",
-  nativeCurrency: {
-    name: "Ether",
-    symbol: "ETH",
-    decimals: 18,
-  },
-  rpcUrls: {
-    default: {
-      http: ["https://mainnet.era.zksync.io"],
-    },
-  },
-  blockExplorers: {
-    default: {
-      name: "zkSync Explorer",
-      url: "https://explorer.zksync.io",
-    },
-  },
-  testnet: false,
-};
+// Returns a public client for the given chainId
+export function getPublicClient(chainId) {
+  const chain = supportedChains[chainId];
+  if (!chain) throw new Error(`Unsupported chainId: ${chainId}`);
+  return createPublicClient({
+    chain,
+    transport: http(chain.rpcUrls.default),
+  });
+}
 
-export const publicClient = createPublicClient({
-  chain: zkSyncEra,
-  transport: http(zkSyncEra.rpcUrls.default.http[0]),
-});
+// Returns a wallet client for the given chainId
+export async function getWalletClient(chainId) {
+  const chain = supportedChains[chainId];
+  if (!chain) throw new Error(`Unsupported chainId: ${chainId}`);
+  return createWalletClient({
+    chain,
+    transport: custom(window.ethereum),
+  });
+}
 
-export const walletClient =
-  typeof window !== "undefined" && typeof window.ethereum !== "undefined"
-    ? createWalletClient({
-        chain: zkSyncEra,
-        transport: custom(window.ethereum),
-      })
-    : null;
+// (Optional) helper if you want to get current chainId as a number
+export async function getCurrentChainId() {
+  const hex = await window.ethereum.request({ method: 'eth_chainId' });
+  return parseInt(hex, 16);
+}

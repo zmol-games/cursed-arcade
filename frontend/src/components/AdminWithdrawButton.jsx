@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { walletClient } from "../utils/viemClient";
-import { CONTRACTS } from "../utils/contracts";
+import { getWalletClient, getCurrentChainId } from "../utils/viemClient";
+import { getContract } from "../utils/getContract";
 import { getConnectedWalletAccount } from "../utils/wallet";
 
 export default function AdminWithdrawButton() {
@@ -25,26 +25,33 @@ export default function AdminWithdrawButton() {
 
   if (!isAdmin) return null;
 
+  const handleWithdraw = async () => {
+    try {
+      const account = await getConnectedWalletAccount();
+      const chainId = await getCurrentChainId();
+      const walletClient = await getWalletClient(chainId);
+      const { address, abi } = getContract("zmolCredits", chainId);
+
+      const txHash = await walletClient.writeContract({
+        account,
+        address,
+        abi,
+        functionName: "withdraw",
+        gas: 300000n,
+      });
+
+      console.log("Withdraw tx:", txHash);
+      alert("Withdraw transaction sent!");
+    } catch (err) {
+      console.error("Withdraw failed:", err);
+      alert("Failed to withdraw");
+    }
+  };
+
   return (
     <div className="absolute bottom-4 left-4 z-50">
       <button
-        onClick={async () => {
-          try {
-            const account = await getConnectedWalletAccount();
-            const txHash = await walletClient.writeContract({
-              account,
-              address: CONTRACTS.zmolCredits.address,
-              abi: CONTRACTS.zmolCredits.abi,
-              functionName: "withdraw",
-              gas: 300000n,
-            });
-            console.log("🤑 Withdraw tx:", txHash);
-            alert("Withdraw transaction sent!");
-          } catch (err) {
-            console.error("Withdraw failed:", err);
-            alert("Failed to withdraw");
-          }
-        }}
+        onClick={handleWithdraw}
         className="px-4 py-2 font-gameboy bg-gameboy hover:bg-gameboyMedium text-gameboyDark rounded shadow-md"
       >
         Withdraw

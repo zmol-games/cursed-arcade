@@ -24,6 +24,7 @@ package-lock.json
 Makefile
 verify.sh
 loadFortunes.sh
+loadFortunesBase.sh
 
 # Editor/OS junk
 .DS_Store

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
-import { CONTRACTS } from "../utils/contracts";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
+import { getContract } from "../utils/getContract";
 import { getWalletAccount } from "../utils/wallet";
 
 const playCoinSound = () => {
@@ -14,44 +14,35 @@ const playCoinSound = () => {
 export default function FaucetButton({ onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [canClaim, setCanClaim] = useState(true); 
+  const [canClaim, setCanClaim] = useState(true);
 
-  // Check if 24 hours have passed since last claim
   const checkCanClaim = async () => {
     const account = await getWalletAccount();
 
     try {
-      // Read the last claim time from the ZmolFaucet contract
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+
+      const { address, abi } = getContract("zmolFaucet", chainId);
+      const publicClient = getPublicClient(chainId);
+
       const lastClaim = await publicClient.readContract({
-        address: CONTRACTS.zmolFaucet.address,
-        abi: CONTRACTS.zmolFaucet.abi,
+        address,
+        abi,
         functionName: "lastClaimTime",
         args: [account],
       });
 
-      // Convert current time to BigInt for proper comparison
-      const currentTime = BigInt(Math.floor(Date.now() / 1000)); // current time as BigInt
+      const currentTime = BigInt(Math.floor(Date.now() / 1000));
+      const lastClaimBigInt = BigInt(lastClaim.toString());
+      const timeDiff = currentTime - lastClaimBigInt;
 
-      // Ensure lastClaim is a BigInt (if it's returned as a string, convert it)
-      const lastClaimBigInt = BigInt(lastClaim.toString()); // Convert lastClaim to BigInt if needed
-
-      const timeDiff = currentTime - lastClaimBigInt; // lastClaim is now BigInt
-
-      console.log("Last Claim Time:", lastClaim); 
-      console.log("Time Difference:", timeDiff); 
-
-      // If less than 24 hours (86400 seconds), disable claim
-      if (timeDiff < BigInt(86400)) {
-        setCanClaim(false);
-      } else {
-        setCanClaim(true);
-      }
+      setCanClaim(timeDiff >= BigInt(86400));
     } catch (err) {
       console.error("❌ Error checking claim time:", err);
     }
   };
 
-  // Check if the user can claim when the component loads
   useEffect(() => {
     checkCanClaim();
   }, []);
@@ -59,25 +50,34 @@ export default function FaucetButton({ onSuccess }) {
   const handleClaimCredit = async () => {
     if (!canClaim) return;
 
-    const account = await getWalletAccount();
-
     setLoading(true);
     setError(null);
 
     try {
+      const account = await getWalletAccount();
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+
+      const walletClient = await getWalletClient(chainId); 
+      const publicClient = getPublicClient(chainId);
+
+      const { address: faucetAddress, abi: faucetAbi } = getContract("zmolFaucet", chainId);
+
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.zmolFaucet.address, 
-        abi: CONTRACTS.zmolFaucet.abi, 
+        address: faucetAddress,
+        abi: faucetAbi,
         functionName: "claimFreeCredit",
         gas: 3000000n,
       });
 
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
+      const { address: creditsAddress, abi: creditsAbi } = getContract("zmolCredits", chainId);
+
       const updatedBalance = await publicClient.readContract({
-        address: CONTRACTS.zmolCredits.address,
-        abi: CONTRACTS.zmolCredits.abi,
+        address: creditsAddress,
+        abi: creditsAbi,
         functionName: "getCredits",
         args: [account],
       });
@@ -85,7 +85,7 @@ export default function FaucetButton({ onSuccess }) {
       if (updatedBalance > 0) {
         playCoinSound();
         onSuccess?.();
-        checkCanClaim(); // Check again after claiming
+        checkCanClaim();
       } else {
         setError("Something went wrong with the transaction.");
       }

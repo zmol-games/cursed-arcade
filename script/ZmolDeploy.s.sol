@@ -10,6 +10,7 @@ import {TicTacToad} from "../src/TicTacToad.sol";
 import {BlobPaperScissors} from "../src/BlobPaperScissors.sol";
 import {SlotMachine} from "../src/SlotMachine.sol";
 import {ZmolFaucet} from "../src/ZmolFaucet.sol";
+import {MadameZmoltra} from "../src/MadameZmoltra.sol";
 
 import {ERC1967Proxy} from "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
@@ -25,7 +26,7 @@ contract ZmolDeploy is Script {
         bytes memory creditsInit = abi.encodeWithSelector(
             ZmolCredits.initialize.selector,
             msg.sender, // owner
-            0.003 ether // pricePerBatch
+            0.001 ether // pricePerBatch
         );
 
         bytes memory arcadeInit = abi.encodeWithSelector(
@@ -51,11 +52,15 @@ contract ZmolDeploy is Script {
         TicTacToad ticTacToad = new TicTacToad(address(arcade), address(credits));
         BlobPaperScissors blob = new BlobPaperScissors(address(arcade), address(credits));
         SlotMachine slots = new SlotMachine(address(arcade), address(credits));
+        MadameZmoltra zmoltra = new MadameZmoltra(address(credits), address(arcade));
+
+        //MadameZmoltra takes (credits, arcade), not (arcade, credits)
 
         // --- Approve Games ---
         arcade.approveGame(address(ticTacToad), true);
         arcade.approveGame(address(blob), true);
         arcade.approveGame(address(slots), true);
+        arcade.approveGame(address(zmoltra), true);
 
         vm.stopBroadcast();
 
@@ -66,6 +71,7 @@ contract ZmolDeploy is Script {
         console2.log("TicTacToad:                 %s", address(ticTacToad));
         console2.log("BlobPaperScissors:          %s", address(blob));
         console2.log("SlotMachine:                %s", address(slots));
+        console2.log("MadameZmoltra:              %s", address(zmoltra));
         console2.log("ZmolCredits (logic):        %s", address(creditsLogic));
         console2.log("ArcadePoints (logic):       %s", address(arcadeLogic));
     }

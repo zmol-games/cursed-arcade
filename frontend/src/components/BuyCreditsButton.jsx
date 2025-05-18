@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
-import { CONTRACTS } from "../utils/contracts";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
+import { getContract } from "../utils/getContract";
 import { getWalletAccount } from "../utils/wallet";
 
 const playCoinSound = () => {
@@ -22,29 +22,33 @@ export default function BuyCreditsButton({ onSuccess }) {
       return;
     }
 
-    const account = await getWalletAccount();
-
-    const valueInWei = BigInt(numCredits / 10) * BigInt(1e15);
-
     setLoading(true);
     setError(null);
 
     try {
+      const account = await getWalletAccount();
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+    
+      const walletClient = await getWalletClient(chainId);
+      const publicClient = getPublicClient(chainId); // ✅ this is what was missing
+      const { address, abi } = getContract("zmolCredits", chainId);
+      
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.zmolCredits.address,
-        abi: CONTRACTS.zmolCredits.abi,
+        address,
+        abi,
         functionName: "buyCredits",
         args: [numCredits],
-        value: valueInWei,
+        value: BigInt(numCredits / 10) * BigInt(1e15),
         gas: 3000000n,
       });
-
+    
       await publicClient.waitForTransactionReceipt({ hash: txHash });
 
       const updatedBalance = await publicClient.readContract({
-        address: CONTRACTS.zmolCredits.address,
-        abi: CONTRACTS.zmolCredits.abi,
+        address,
+        abi,
         functionName: "getCredits",
         args: [account],
       });

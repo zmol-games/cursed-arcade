@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { publicClient } from "../utils/viemClient";
-import { CONTRACTS } from "../utils/contracts";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
+import { getContract } from "../utils/getContract";
 import { getConnectedWalletAccount } from "../utils/wallet";
 
 export default function PointsDisplay({ refreshTrigger }) {
@@ -14,15 +14,32 @@ export default function PointsDisplay({ refreshTrigger }) {
 
     try {
       const account = await getConnectedWalletAccount();
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+      const { address, abi } = getContract("arcadePoints", chainId);
+      const publicClient = getPublicClient(chainId);
 
-      const result = await publicClient.readContract({
-        address: CONTRACTS.arcadePoints.address,
-        abi: CONTRACTS.arcadePoints.abi,
+      let result;
+
+      try {
+        result = await publicClient.readContract({
+        address,
+        abi,
         functionName: "getPoints",
         args: [account],
       });
+    } catch (err) {
+      if (
+      err.message?.includes("returned no data") ||
+      err.message?.includes("execution reverted")
+      ) {
+      result = 0;
+      } else {
+      throw err;
+      }
+    }
 
-      setPoints(Number(result));
+    setPoints(Number(result));
     } catch (err) {
       console.error("❌ Error fetching points:", err);
       setError(err.shortMessage || err.message || "Failed to load points");

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { walletClient, publicClient } from "../utils/viemClient";
+import { getWalletClient, getPublicClient } from "../utils/viemClient";
 import { decodeEventLog } from "viem";
-import { CONTRACTS } from "../utils/contracts";
+import { getContract } from "../utils/getContract";
 import { getWalletAccount } from "../utils/wallet";
 import Layout from "../components/Layout";
 
@@ -76,10 +76,18 @@ export default function BlobPaperScissors() {
     try {
       const account = await getWalletAccount();
 
+      const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+      const chainId = parseInt(chainIdHex, 16);
+
+      const walletClient = await getWalletClient(chainId);
+      const publicClient = getPublicClient(chainId);
+
+      const { address, abi } = getContract("blobPaperScissors", chainId);
+
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.blobPaperScissors.address,
-        abi: CONTRACTS.blobPaperScissors.abi,
+        address,
+        abi,
         functionName: "play",
         args: [selectedMove],
         gas: 300000n,
@@ -98,7 +106,7 @@ export default function BlobPaperScissors() {
         .map((log) => {
           try {
             return decodeEventLog({
-              abi: CONTRACTS.blobPaperScissors.abi,
+              abi,
               data: log.data,
               topics: log.topics,
             });
@@ -118,11 +126,15 @@ export default function BlobPaperScissors() {
 
       // Refresh points if user won
       if (outcomeValue === 0) {
-        setPointsRefreshKey((k) => k + 1);
+        setTimeout(() => {
+          setPointsRefreshKey((k) => k + 1);
+        }, 500);
       }
 
       // Always refresh credits after a game
-      setCreditsRefreshKey((k) => k + 1);
+      setTimeout(() => {
+        setCreditsRefreshKey((k) => k + 1);
+      }, 800);
 
       setPlayerMove(Number(gameLog.args.playerMove));
       setToadMove(Number(gameLog.args.blobMove));

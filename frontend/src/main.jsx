@@ -12,14 +12,14 @@ import {
 } from "@rainbow-me/rainbowkit";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { zkSyncEra } from "./utils/zkSyncEraChain";
+import { zkSyncEra, base } from "./utils/chains";
 
 const projectId = "48ecc4a8c7c822c92b7e475737d492af";
 
 const config = getDefaultConfig({
   appName: "Zmol Games",
   projectId,
-  chains: [zkSyncEra],
+  chains: [zkSyncEra, base], 
   ssr: false,
 });
 

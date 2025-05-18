@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { walletClient, publicClient } from '../utils/viemClient'
+import { getWalletClient, getPublicClient } from '../utils/viemClient'
 import { decodeEventLog } from 'viem'
-import { CONTRACTS } from '../utils/contracts'
+import { getContract } from "../utils/getContract";
 import { getWalletAccount } from '../utils/wallet'
 import Layout from '../components/Layout'
 
@@ -33,12 +33,17 @@ export default function MadameZmoltra() {
     setPointsEarned(0)
 
     try {
-      const account = await getWalletAccount()
+        const account = await getWalletAccount();
+        const chainIdHex = await window.ethereum.request({ method: "eth_chainId" });
+        const chainId = parseInt(chainIdHex, 16);
+        const walletClient = await getWalletClient(chainId);
+        const { address, abi } = getContract("madameZmoltra", chainId);
+        const publicClient = getPublicClient(chainId);
 
       const txHash = await walletClient.writeContract({
         account,
-        address: CONTRACTS.madameZmoltra.address,
-        abi: CONTRACTS.madameZmoltra.abi,
+        address,
+        abi,
         functionName: 'drawFortune',
         gas: 250000n,
       })
@@ -54,7 +59,7 @@ export default function MadameZmoltra() {
         .map(log => {
           try {
             return decodeEventLog({
-              abi: CONTRACTS.madameZmoltra.abi,
+              abi,
               data: log.data,
               topics: log.topics,
             })
@@ -73,10 +78,14 @@ export default function MadameZmoltra() {
       setPointsEarned(Number(fortuneLog.args.pointsAwarded))
 
       if (Number(fortuneLog.args.pointsAwarded) > 0) {
-        setPointsRefreshKey((k) => k + 1)
+        setTimeout(() => {
+            setPointsRefreshKey((k) => k + 1);
+          }, 500);
       }
 
-      setCreditsRefreshKey((k) => k + 1)
+      setTimeout(() => {
+        setCreditsRefreshKey((k) => k + 1);
+      }, 800);
 
       playFortuneSound()
 
